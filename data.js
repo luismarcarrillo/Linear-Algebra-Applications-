@@ -34,7 +34,7 @@ const aplicaciones = [
     descripcion: "Deducción de la matriz de rotación y verificación de que preserva norma y ángulos.",
     etiquetas: ["geometría", "R²"],
     estado: "planeada",
-    enlace: "#"
+    enlace: "notebook/rotaciones.htlm"
   },
   
 ];

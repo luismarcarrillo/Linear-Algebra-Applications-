@@ -4,12 +4,12 @@
    ========================================================= */
 
 :root{
-  --paper: #ECE8DE;
+  --paper: #000000;
   --paper-raised: #F5F2E9;
   --ink: #1E232B;
   --ink-soft: #4A5160;
-  --rule: #C7BFA8;
-  --rule-soft: #D9D3C1;
+  --rule: #000;
+  --rule-soft: #69b4fb;
   --brass: #5cc9ff;
   --brass-dim: #5dfcef;
   --slate: #2B4A6B;

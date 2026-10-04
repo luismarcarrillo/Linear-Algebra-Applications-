@@ -1,0 +1,189 @@
+---
+title: "Matrices de rotación en el plano"
+subtitle: "AL.01 · Transformaciones lineales y geometría"
+author: "Nikolay Vavilov"
+date: today
+lang: es
+format:
+  html:
+    theme: darkly
+    css: estilo-quarto.css
+    embed-resources: true
+    toc: true
+    toc-title: "Contenido"
+    toc-depth: 2
+    number-sections: true
+    code-fold: true
+    code-summary: "ver código"
+    highlight-style: a11y-dark
+    smooth-scroll: true
+    html-math-method: mathjax
+    crossref:
+      thm-title: "Teorema"
+      def-title: "Definición"
+      fig-title: "Figura"
+      eq-prefix: "Ec."
+jupyter: python3
+---
+
+[← Volver al catálogo](../index.html){.volver}
+
+::: {.callout-note}
+## Objetivo
+Deducir la matriz de rotación en $\mathbb{R}^2$, demostrar que preserva norma y ángulos, y comprobarlo numéricamente.
+:::
+
+# Planteamiento
+
+Una **rotación** de ángulo $\theta$ alrededor del origen es una transformación lineal $R_\theta:\mathbb{R}^2\to\mathbb{R}^2$. Al ser lineal, queda determinada por lo que hace con la base canónica $\{e_1, e_2\}$.
+
+::: {#def-rotacion}
+## Rotación
+La rotación $R_\theta$ envía $e_1=(1,0)$ a $(\cos\theta,\sin\theta)$ y $e_2=(0,1)$ a $(-\sin\theta,\cos\theta)$.
+:::
+
+# Deducción de la matriz
+
+Las columnas de la matriz de una transformación lineal son las imágenes de la base. Por tanto
+
+$$
+R_\theta =
+\begin{pmatrix}
+\cos\theta & -\sin\theta \\
+\sin\theta & \cos\theta
+\end{pmatrix}.
+$$ {#eq-rotacion}
+
+Para un vector $v=(x,y)^\top$ se tiene
+
+$$
+R_\theta v =
+\begin{pmatrix} x\cos\theta - y\sin\theta \\ x\sin\theta + y\cos\theta \end{pmatrix}.
+$$ {#eq-accion}
+
+# Propiedades
+
+::: {#thm-ortogonal}
+## $R_\theta$ es ortogonal
+Para todo $\theta$, $R_\theta^\top R_\theta = I$ y $\det R_\theta = 1$.
+:::
+
+::: {.proof}
+Al multiplicar,
+$$
+R_\theta^\top R_\theta =
+\begin{pmatrix}
+\cos^2\theta+\sin^2\theta & 0\\
+0 & \sin^2\theta+\cos^2\theta
+\end{pmatrix} = I,
+$$
+y $\det R_\theta = \cos^2\theta + \sin^2\theta = 1$.
+:::
+
+::: {#thm-norma}
+## Preservación de norma y ángulos
+Para todo $u,v\in\mathbb{R}^2$: $\langle R_\theta u, R_\theta v\rangle = \langle u, v\rangle$. En particular $\|R_\theta v\|=\|v\|$ y el ángulo entre $u$ y $v$ no cambia.
+:::
+
+::: {.proof}
+Por el @thm-ortogonal,
+$\langle R_\theta u, R_\theta v\rangle = u^\top R_\theta^\top R_\theta v = u^\top v$.
+Tomando $u=v$ se obtiene la igualdad de normas, y como el coseno del ángulo es $\langle u,v\rangle/(\|u\|\|v\|)$, el ángulo se conserva.
+:::
+
+::: {.callout-tip}
+## Composición
+Rotar $\alpha$ y luego $\beta$ equivale a rotar $\alpha+\beta$, es decir, $R_\beta R_\alpha = R_{\alpha+\beta}$. Esto equivale a las fórmulas del seno y coseno de una suma.
+:::
+
+# Verificación numérica
+
+```{python}
+#| label: setup
+import numpy as np
+import matplotlib.pyplot as plt
+
+PAPER, RAISED, INK = "#000000", "#0D1116", "#F2F5F7"
+AZUL, MENTA, RULE = "#5cc9ff", "#5dfcef", "#2A3540"
+
+plt.rcParams.update({
+    "figure.facecolor": PAPER, "axes.facecolor": RAISED,
+    "axes.edgecolor": RULE, "axes.labelcolor": INK,
+    "xtick.color": INK, "ytick.color": INK,
+    "text.color": INK, "grid.color": RULE,
+    "font.family": "monospace",
+})
+
+def R(theta):
+    c, s = np.cos(theta), np.sin(theta)
+    return np.array([[c, -s], [s, c]])
+```
+
+Comprobamos con vectores aleatorios que la norma y el producto interno se conservan:
+
+```{python}
+#| label: verificacion
+rng = np.random.default_rng(0)
+theta = np.pi / 3
+U = rng.normal(size=(2, 1000))
+V = rng.normal(size=(2, 1000))
+
+err_norma = np.max(np.abs(np.linalg.norm(R(theta) @ U, axis=0)
+                          - np.linalg.norm(U, axis=0)))
+err_prod = np.max(np.abs(np.sum((R(theta) @ U) * (R(theta) @ V), axis=0)
+                         - np.sum(U * V, axis=0)))
+err_comp = np.max(np.abs(R(0.7) @ R(0.4) - R(1.1)))
+
+print(f"max |‖Ru‖ - ‖u‖|        = {err_norma:.2e}")
+print(f"max |<Ru,Rv> - <u,v>|   = {err_prod:.2e}")
+print(f"max |R(0.7)R(0.4)-R(1.1)| = {err_comp:.2e}")
+print(f"det R(θ)                = {np.linalg.det(R(theta)):.6f}")
+```
+
+Los errores quedan en el orden del error de máquina, como predice el @thm-norma.
+
+# Visualización
+
+```{python}
+#| label: fig-rotacion
+#| fig-cap: "Cuadrado unitario (azul) y su imagen bajo una rotación de 45° (menta)."
+#| fig-align: center
+cuadrado = np.array([[0, 1, 1, 0, 0],
+                     [0, 0, 1, 1, 0]], dtype=float)
+rotado = R(np.pi / 4) @ cuadrado
+
+fig, ax = plt.subplots(figsize=(5, 5))
+ax.fill(*cuadrado, color=AZUL, alpha=0.25)
+ax.plot(*cuadrado, color=AZUL, lw=2, label="original")
+ax.fill(*rotado, color=MENTA, alpha=0.25)
+ax.plot(*rotado, color=MENTA, lw=2, label=r"$R_{45^\circ}$")
+ax.axhline(0, color=RULE, lw=1); ax.axvline(0, color=RULE, lw=1)
+ax.set_aspect("equal"); ax.grid(True, lw=0.5)
+ax.legend(facecolor=RAISED, edgecolor=RULE)
+plt.show()
+```
+
+La @fig-rotacion muestra que el cuadrado conserva su forma y tamaño: solo gira.
+
+# Valores propios
+
+Sobre $\mathbb{R}$ una rotación (salvo $\theta=0,\pi$) no tiene vectores propios reales, pero sobre $\mathbb{C}$ sus valores propios son $e^{\pm i\theta}$:
+
+```{python}
+#| label: autovalores
+vals = np.linalg.eigvals(R(np.pi / 3))
+print("valores propios:", np.round(vals, 6))
+print("e^{±iπ/3}      :", np.round([np.exp(1j*np.pi/3), np.exp(-1j*np.pi/3)], 6))
+```
+
+# Resumen
+
+| Propiedad | Expresión |
+|---|---|
+| Matriz | $R_\theta=\begin{pmatrix}\cos\theta&-\sin\theta\\ \sin\theta&\cos\theta\end{pmatrix}$ |
+| Ortogonalidad | $R_\theta^\top R_\theta = I$ |
+| Determinante | $\det R_\theta = 1$ |
+| Composición | $R_\beta R_\alpha = R_{\alpha+\beta}$ |
+| Valores propios | $e^{\pm i\theta}$ |
+
+: Propiedades de la rotación en el plano {#tbl-resumen}

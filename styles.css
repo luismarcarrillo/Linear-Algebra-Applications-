@@ -5,19 +5,19 @@
 
 :root{
   --paper: #000000;
-  --paper-raised: #F5F2E9;
-  --ink: #1E232B;
-  --ink-soft: #4A5160;
-  --rule: #000;
-  --rule-soft: #69b4fb;
+  --paper-raised: #0D1116;
+  --ink: #F2F5F7;
+  --ink-soft: #A3AEB8;
+  --rule: #2A3540;
+  --rule-soft: #0F1A24;
   --brass: #5cc9ff;
   --brass-dim: #5dfcef;
-  --slate: #2B4A6B;
-  --slate-dim: #6C879F;
-  --tag-verde: #4B6355;
-  --tag-verde-bg: #DDE4D8;
-  --tag-ambar-bg: #000000;
-  --tag-azul-bg: #DCE4EC;
+  --slate: #A9C8E8;
+  --slate-dim: #6F8FA8;
+  --tag-verde: #A8DCC0;
+  --tag-verde-bg: #14251D;
+  --tag-ambar-bg: #1B2A22;
+  --tag-azul-bg: #13222F;
 
   --serif: "Source Serif 4", "Iowan Old Style", "Georgia", serif;
   --sans: "IBM Plex Sans", "Segoe UI", sans-serif;
